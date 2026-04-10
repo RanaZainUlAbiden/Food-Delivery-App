@@ -1,37 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
-import '../../../core/constants/app_constants.dart';
+import '../../../services/providers.dart';
 import '../widgets/category_pill.dart';
 import '../widgets/featured_item_card.dart';
 import '../widgets/promo_banner.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _selectedCategory = 0;
-
-  final List<String> _categories = [
-    'All',
-    'Pizzas',
-    'Burgers',
-    'Deals',
-    'Drinks',
-    'Sides',
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final categoriesAsync = ref.watch(categoriesProvider);
+    final categories = categoriesAsync.value ?? ['All'];
+    final selectedCategoryName =
+        _selectedCategory == 0 ? null : categories[_selectedCategory];
+    final menuAsync = ref.watch(menuProvider(selectedCategoryName));
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
-          // ── App Bar ──
           SliverAppBar(
             floating: true,
             snap: true,
@@ -40,29 +37,19 @@ class _HomeScreenState extends State<HomeScreen> {
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Delivering to',
-                  style: AppTextStyles.caption,
-                ),
+                Text('Delivering to', style: AppTextStyles.caption),
                 Row(
                   children: [
-                    const Icon(
-                      Icons.location_on,
-                      color: AppColors.primary,
-                      size: 16,
-                    ),
+                    const Icon(Icons.location_on,
+                        color: AppColors.primary, size: 16),
                     const SizedBox(width: 4),
                     Text(
                       'Lahore, Pakistan',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: AppTextStyles.bodyMedium
+                          .copyWith(fontWeight: FontWeight.w600),
                     ),
-                    const Icon(
-                      Icons.keyboard_arrow_down,
-                      size: 18,
-                      color: AppColors.textSecondary,
-                    ),
+                    const Icon(Icons.keyboard_arrow_down,
+                        size: 18, color: AppColors.textSecondary),
                   ],
                 ),
               ],
@@ -70,15 +57,12 @@ class _HomeScreenState extends State<HomeScreen> {
             actions: [
               IconButton(
                 onPressed: () {},
-                icon: const Icon(
-                  Icons.notifications_outlined,
-                  color: AppColors.textPrimary,
-                ),
+                icon: const Icon(Icons.notifications_outlined,
+                    color: AppColors.textPrimary),
               ),
             ],
           ),
 
-          // ── Body ──
           SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,17 +82,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       children: [
                         const SizedBox(width: 12),
-                        const Icon(
-                          Icons.search,
-                          color: AppColors.textHint,
-                          size: 20,
-                        ),
+                        const Icon(Icons.search,
+                            color: AppColors.textHint, size: 20),
                         const SizedBox(width: 8),
                         Text(
                           'Search for pizzas, burgers...',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.textHint,
-                          ),
+                          style: AppTextStyles.bodyMedium
+                              .copyWith(color: AppColors.textHint),
                         ),
                       ],
                     ),
@@ -116,19 +96,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
 
                 const SizedBox(height: 20),
-
-                // Promo Banner
                 const PromoBanner(),
-
                 const SizedBox(height: 24),
 
                 // Categories
                 Padding(
                   padding: const EdgeInsets.only(left: 16),
-                  child: Text(
-                    'Categories',
-                    style: AppTextStyles.h3,
-                  ),
+                  child: Text('Categories', style: AppTextStyles.h3),
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
@@ -136,16 +110,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: _categories.length,
+                    itemCount: categories.length,
                     itemBuilder: (context, index) {
                       return CategoryPill(
-                        label: _categories[index],
+                        label: categories[index],
                         isSelected: _selectedCategory == index,
-                        onTap: () {
-                          setState(() {
-                            _selectedCategory = index;
-                          });
-                        },
+                        onTap: () =>
+                            setState(() => _selectedCategory = index),
                       );
                     },
                   ),
@@ -153,33 +124,46 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 const SizedBox(height: 24),
 
-                // Featured Items
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'Popular Items',
-                    style: AppTextStyles.h3,
-                  ),
+                  child: Text('Popular Items', style: AppTextStyles.h3),
                 ),
                 const SizedBox(height: 12),
 
-                // Items Grid
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.78,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
+                // Menu Items
+                menuAsync.when(
+                  loading: () => const Padding(
+                    padding: EdgeInsets.all(40),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                      ),
                     ),
-                    itemCount: dummyItems.length,
-                    itemBuilder: (context, index) {
-                      return FeaturedItemCard(item: dummyItems[index]);
-                    },
+                  ),
+                  error: (e, _) => Padding(
+                    padding: const EdgeInsets.all(40),
+                    child: Center(
+                      child: Text('Error loading items',
+                          style: AppTextStyles.bodyMedium),
+                    ),
+                  ),
+                  data: (items) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.78,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                      ),
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        return FeaturedItemCard(item: items[index]);
+                      },
+                    ),
                   ),
                 ),
 
@@ -192,43 +176,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-// Dummy data — baad mein API se aayega
-final dummyItems = [
-  {
-    'name': 'Mighty Meat Pizza',
-    'price': 1299,
-    'category': 'Pizzas',
-    'tag': 'Best Seller',
-  },
-  {
-    'name': 'Stone Burger',
-    'price': 599,
-    'category': 'Burgers',
-    'tag': 'New',
-  },
-  {
-    'name': 'Family Deal',
-    'price': 2499,
-    'category': 'Deals',
-    'tag': 'Deal',
-  },
-  {
-    'name': 'BBQ Chicken Pizza',
-    'price': 1099,
-    'category': 'Pizzas',
-    'tag': '',
-  },
-  {
-    'name': 'Zinger Burger',
-    'price': 649,
-    'category': 'Burgers',
-    'tag': 'Hot',
-  },
-  {
-    'name': 'Garlic Bread',
-    'price': 299,
-    'category': 'Sides',
-    'tag': '',
-  },
-];

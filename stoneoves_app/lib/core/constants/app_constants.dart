@@ -3,6 +3,7 @@ class AppConstants {
   static const String appName = 'The Stone Oves';
   static const String appTagline = 'Fresh. Hot. Delivered.';
 
+  
   // Branch Info
   static const String branchName = 'The Stone Oves — Lahore';
   static const String branchAddress = 'Lahore, Pakistan';
