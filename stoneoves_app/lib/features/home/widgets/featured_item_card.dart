@@ -5,6 +5,7 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../models/menu_item_model.dart';
 import '../../../services/providers.dart';
+import '../../../core/constants/app_images.dart';
 
 class FeaturedItemCard extends ConsumerWidget {
   final MenuItemModel item;
@@ -30,15 +31,17 @@ class FeaturedItemCard extends ConsumerWidget {
             child: Stack(
               children: [
                 Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(16)),
-                  ),
-                  child: const Icon(Icons.fastfood,
-                      size: 60, color: AppColors.divider),
-                ),
+  width: double.infinity,
+  decoration: BoxDecoration(
+    borderRadius: const BorderRadius.vertical(
+      top: Radius.circular(16),
+    ),
+    image: DecorationImage(
+      image: AssetImage(AppImages.getImage(item.name)),
+      fit: BoxFit.cover,
+    ),
+  ),
+),
                 if (item.tag != null && item.tag!.isNotEmpty)
                   Positioned(
                     top: 8,

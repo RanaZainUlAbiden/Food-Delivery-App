@@ -5,7 +5,7 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../services/providers.dart';
 import '../widgets/category_pill.dart';
 import '../widgets/featured_item_card.dart';
-import '../widgets/promo_banner.dart';
+import '../widgets/hero_video_player.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -37,7 +37,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Delivering to', style: AppTextStyles.caption),
+                const Text('Delivering to', style: AppTextStyles.caption),
                 Row(
                   children: [
                     const Icon(Icons.location_on,
@@ -96,12 +96,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
 
                 const SizedBox(height: 20),
-                const PromoBanner(),
+                const HeroVideoPlayer(),
                 const SizedBox(height: 24),
 
                 // Categories
-                Padding(
-                  padding: const EdgeInsets.only(left: 16),
+                const Padding(
+                  padding: EdgeInsets.only(left: 16),
                   child: Text('Categories', style: AppTextStyles.h3),
                 ),
                 const SizedBox(height: 12),
@@ -124,8 +124,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                 const SizedBox(height: 24),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Text('Popular Items', style: AppTextStyles.h3),
                 ),
                 const SizedBox(height: 12),
@@ -140,8 +140,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                   ),
-                  error: (e, _) => Padding(
-                    padding: const EdgeInsets.all(40),
+                  error: (e, _) => const Padding(
+                    padding: EdgeInsets.all(40),
                     child: Center(
                       child: Text('Error loading items',
                           style: AppTextStyles.bodyMedium),

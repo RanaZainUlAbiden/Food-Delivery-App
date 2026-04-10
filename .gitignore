@@ -1,0 +1,12 @@
+# Backend
+stoneoves_backend/.env
+stoneoves_backend/node_modules/
+
+# Flutter
+stoneoves_app/.dart_tool/
+stoneoves_app/build/
+stoneoves_app/.flutter-plugins
+stoneoves_app/.flutter-plugins-dependencies
+
+# Assets — images/videos khud add karni hain
+stoneoves_app/assets/images/

@@ -40,7 +40,7 @@ class OrdersScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.surface,
         elevation: 0,
-        title: Text('My Orders', style: AppTextStyles.h3),
+        title: const Text('My Orders', style: AppTextStyles.h3),
       ),
       body: _orders.isEmpty
           ? _buildEmpty()
@@ -59,10 +59,10 @@ class OrdersScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.receipt_long_outlined,
+          const Icon(Icons.receipt_long_outlined,
               size: 80, color: AppColors.divider),
           const SizedBox(height: 16),
-          Text('No orders yet', style: AppTextStyles.h3),
+          const Text('No orders yet', style: AppTextStyles.h3),
           const SizedBox(height: 8),
           Text(
             'Your order history will appear here',
@@ -186,8 +186,8 @@ class _OrderCard extends StatelessWidget {
           // Active order tracker
           if (isActive) ...[
             const Divider(height: 1, color: AppColors.divider),
-            Padding(
-              padding: const EdgeInsets.all(14),
+            const Padding(
+              padding: EdgeInsets.all(14),
               child: _OrderTracker(),
             ),
           ],
@@ -218,9 +218,9 @@ class _OrderCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Text('Order Tracking', style: AppTextStyles.h3),
+            const Text('Order Tracking', style: AppTextStyles.h3),
             const SizedBox(height: 20),
-            _OrderTracker(),
+            const _OrderTracker(),
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(14),
