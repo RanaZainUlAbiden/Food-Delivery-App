@@ -10,7 +10,7 @@ export default function MenuPage() {
   const [editItem, setEditItem] = useState(null);
   const [form, setForm] = useState({
     name: '', description: '', price: '',
-    tag: '', categoryId: '', sortOrder: '0',
+    tag: '', categoryId: '', sortOrder: '0', image: '',
   });
 
   const fetchData = async () => {
@@ -30,7 +30,7 @@ export default function MenuPage() {
 
   const openAdd = () => {
     setEditItem(null);
-    setForm({ name: '', description: '', price: '', tag: '', categoryId: '', sortOrder: '0' });
+    setForm({ name: '', description: '', price: '', tag: '', categoryId: '', sortOrder: '0', image: '' });
     setShowModal(true);
   };
 
@@ -40,6 +40,7 @@ export default function MenuPage() {
       name: item.name, description: item.description || '',
       price: item.price.toString(), tag: item.tag || '',
       categoryId: item.categoryId.toString(), sortOrder: item.sortOrder.toString(),
+      image: item.image || '',
     });
     setShowModal(true);
   };
@@ -134,11 +135,16 @@ export default function MenuPage() {
                   borderBottom: i < items.length - 1 ? '1px solid #f5f5f5' : 'none',
                   backgroundColor: 'white',
                 }}>
-                  <td style={{ padding: '16px 20px' }}>
-                    <p style={{ fontWeight: '600', color: '#1D1D1D', margin: 0, fontSize: '14px' }}>{item.name}</p>
-                    <p style={{ color: '#888', fontSize: '12px', margin: '2px 0 0', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {item.description}
-                    </p>
+                  <td style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#eee', flexShrink: 0 }}>
+                      {item.image ? <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ display: 'flex', height: '100%', justifyContent: 'center', alignItems: 'center', color: '#aaa', fontSize: '10px' }}>No img</span>}
+                    </div>
+                    <div>
+                      <p style={{ fontWeight: '600', color: '#1D1D1D', margin: 0, fontSize: '14px' }}>{item.name}</p>
+                      <p style={{ color: '#888', fontSize: '12px', margin: '2px 0 0', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {item.description}
+                      </p>
+                    </div>
                   </td>
                   <td style={{ padding: '16px 20px', color: '#555', fontSize: '14px' }}>{item.category.name}</td>
                   <td style={{ padding: '16px 20px' }}>
@@ -235,6 +241,15 @@ export default function MenuPage() {
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   style={{ ...inputStyle, resize: 'none', height: '72px' }}
                   placeholder="Item description"
+                />
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={labelStyle}>Image URL</label>
+                <input
+                  value={form.image}
+                  onChange={(e) => setForm({ ...form, image: e.target.value })}
+                  style={inputStyle} placeholder="https://example.com/pizza.jpg"
                 />
               </div>
 

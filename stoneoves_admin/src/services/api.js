@@ -5,6 +5,16 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('stoneoves_admin_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => Promise.reject(error));
+
+export const loginAdmin = (data) => api.post('/auth/login', data);
+
 export const getOrders = (status) =>
   api.get('/orders', { params: status ? { status } : {} });
 
