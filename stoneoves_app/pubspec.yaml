@@ -13,9 +13,9 @@ dependencies:
 
 
   # Video Player — Windows compatible
-  # media_kit: ^1.1.11
-  # media_kit_video: ^1.2.4
-  # media_kit_libs_windows_video: ^1.0.9
+  media_kit: ^1.1.11
+  media_kit_video: ^1.2.4
+  media_kit_libs_windows_video: ^1.0.9
 
   # State Management
   flutter_riverpod: ^2.5.1

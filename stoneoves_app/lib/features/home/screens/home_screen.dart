@@ -7,6 +7,7 @@ import '../../../services/providers.dart';
 import '../widgets/category_pill.dart';
 import '../widgets/featured_item_card.dart';
 import '../widgets/promo_banner.dart';
+import '../../../models/menu_item_model.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -17,6 +18,33 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _selectedCategory = 0;
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<MenuItemModel> _filterItems(List<MenuItemModel> items) {
+    if (_searchQuery.isEmpty) {
+      return items;
+    }
+    return items.where((item) {
+      return item.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          (item.description?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
+    }).toList();
+  }
+
+  void _clearSearch() {
+    setState(() {
+      _searchQuery = '';
+      _searchController.clear();
+      _isSearching = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,87 +190,117 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ],
                     ),
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 14),
-                        const Icon(Icons.search,
-                            color: AppColors.textHint, size: 22),
-                        const SizedBox(width: 10),
-                        Text(
-                          'Search pizzas, burgers...',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.textHint,
-                          ),
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (value) {
+                        setState(() {
+                          _searchQuery = value;
+                          _isSearching = value.isNotEmpty;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Search pizzas, burgers...',
+                        hintStyle: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.textHint,
                         ),
-                      ],
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: AppColors.textHint,
+                          size: 22,
+                        ),
+                        suffixIcon: _isSearching
+                            ? IconButton(
+                                icon: const Icon(
+                                  Icons.clear,
+                                  color: AppColors.textHint,
+                                  size: 20,
+                                ),
+                                onPressed: _clearSearch,
+                              )
+                            : null,
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                      ),
                     ),
                   ),
                 ),
 
                 const SizedBox(height: 4),
 
-                // ── Promo Banner ──
-                const PromoBanner(),
+                // ── Promo Banner (hide when searching) ──
+                if (!_isSearching) const PromoBanner(),
 
-                const SizedBox(height: 28),
+                if (!_isSearching) const SizedBox(height: 28),
 
-                // ── Categories ──
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Categories', style: AppTextStyles.h3),
-                      Text(
-                        'See all',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 14),
-
-                SizedBox(
-                  height: 42,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
+                // ── Categories (hide when searching) ──
+                if (!_isSearching)
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: categories.length,
-                    itemBuilder: (context, index) {
-                      return CategoryPill(
-                        label: categories[index],
-                        isSelected: _selectedCategory == index,
-                        onTap: () =>
-                            setState(() => _selectedCategory = index),
-                      );
-                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Categories', style: AppTextStyles.h3),
+                        Text(
+                          'See all',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                if (!_isSearching) const SizedBox(height: 14),
 
-                const SizedBox(height: 28),
+                if (!_isSearching)
+                  SizedBox(
+                    height: 42,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: categories.length,
+                      itemBuilder: (context, index) {
+                        return CategoryPill(
+                          label: categories[index],
+                          isSelected: _selectedCategory == index,
+                          onTap: () =>
+                              setState(() => _selectedCategory = index),
+                        );
+                      },
+                    ),
+                  ),
 
-                // ── Popular Items ──
+                if (!_isSearching) const SizedBox(height: 28),
+
+                // ── Section Title ──
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Popular Items', style: AppTextStyles.h3),
                       Text(
-                        'See all',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        _isSearching
+                            ? 'Search Results'
+                            : 'Popular Items',
+                        style: AppTextStyles.h3,
                       ),
+                      if (!_isSearching)
+                        Text(
+                          'See all',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
 
+                // ── Menu Items Grid ──
                 menuAsync.when(
                   loading: () => const Padding(
                     padding: EdgeInsets.all(40),
@@ -272,24 +330,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                   ),
-                  data: (items) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.75,
-                        crossAxisSpacing: 14,
-                        mainAxisSpacing: 14,
+                  data: (items) {
+                    final filteredItems = _filterItems(items);
+                    
+                    if (filteredItems.isEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.search_off,
+                                size: 48,
+                                color: AppColors.divider,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'No items found',
+                                style: AppTextStyles.bodyMedium,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Try searching with different keywords',
+                                style: AppTextStyles.bodySmall.copyWith(
+                                  color: AppColors.textHint,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.68, // Adjusted for better mobile fit
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                        ),
+                        itemCount: filteredItems.length,
+                        itemBuilder: (context, index) {
+                          return FeaturedItemCard(item: filteredItems[index]);
+                        },
                       ),
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        return FeaturedItemCard(item: items[index]);
-                      },
-                    ),
-                  ),
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 100),

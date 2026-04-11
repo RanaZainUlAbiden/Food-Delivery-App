@@ -35,7 +35,7 @@ export default function LoginPage() {
             navigate('/orders');
             return;
           }
-        } catch(registerErr) {
+        } catch {
           setError('Failed to login or auto-register admin.');
         }
       } else {

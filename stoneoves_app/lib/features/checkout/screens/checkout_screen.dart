@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../cart/providers/cart_provider.dart';
-import '../../services/api_service.dart';
+import '../../cart/providers/cart_provider.dart';
+import '../../../services/api_service.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
   @override
