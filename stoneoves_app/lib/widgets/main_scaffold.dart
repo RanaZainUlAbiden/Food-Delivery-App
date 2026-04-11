@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../core/constants/app_colors.dart';
+import '../services/providers.dart';
 
-class MainScaffold extends StatelessWidget {
+class MainScaffold extends ConsumerWidget {
   final Widget child;
   const MainScaffold({super.key, required this.child});
 
@@ -16,7 +18,9 @@ class MainScaffold extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cartCount = ref.watch(cartItemCountProvider);
+
     return Scaffold(
       body: child,
       bottomNavigationBar: Container(
@@ -29,37 +33,37 @@ class MainScaffold extends StatelessWidget {
           currentIndex: _selectedIndex(context),
           onTap: (index) {
             switch (index) {
-              case 0:
-                context.go('/');
-                break;
-              case 1:
-                context.go('/menu');
-                break;
-              case 2:
-                context.go('/cart');
-                break;
-              case 3:
-                context.go('/orders');
-                break;
+              case 0: context.go('/'); break;
+              case 1: context.go('/menu'); break;
+              case 2: context.go('/cart'); break;
+              case 3: context.go('/orders'); break;
             }
           },
-          items: const [
-            BottomNavigationBarItem(
+          items: [
+            const BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home),
               label: 'Home',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.restaurant_menu_outlined),
               activeIcon: Icon(Icons.restaurant_menu),
               label: 'Menu',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart_outlined),
-              activeIcon: Icon(Icons.shopping_cart),
+              icon: Badge(
+                isLabelVisible: cartCount > 0,
+                label: Text('$cartCount'),
+                child: const Icon(Icons.shopping_cart_outlined),
+              ),
+              activeIcon: Badge(
+                isLabelVisible: cartCount > 0,
+                label: Text('$cartCount'),
+                child: const Icon(Icons.shopping_cart),
+              ),
               label: 'Cart',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.receipt_long_outlined),
               activeIcon: Icon(Icons.receipt_long),
               label: 'Orders',
