@@ -3,6 +3,21 @@ const prisma = new PrismaClient();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// ══════════════════════════════════════════════════════════════
+// HARDCODED ADMIN CREDENTIALS
+// ══════════════════════════════════════════════════════════════
+const HARDCODED_ADMIN = {
+  id: 'admin-1',
+  email: 'admin@stoneoves.com',
+  password: 'Admin@123', // Plain text password (will be compared directly)
+  name: 'Admin User',
+  role: 'ADMIN'
+};
+
+// Alternative: Use hashed password (more secure)
+// To generate hash, run: bcrypt.hash('Admin@123', 10) and paste result below
+// const ADMIN_PASSWORD_HASH = '$2a$10$YOUR_HASH_HERE';
+
 exports.register = async (req, res) => {
   try {
     const { email, password, name, phone } = req.body;
@@ -36,6 +51,32 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     
+    // ══════════════════════════════════════════════════════════════
+    // CHECK HARDCODED ADMIN FIRST
+    // ══════════════════════════════════════════════════════════════
+    if (email === HARDCODED_ADMIN.email && password === HARDCODED_ADMIN.password) {
+      const secret = process.env.JWT_SECRET || 'fallback_secret';
+      const token = jwt.sign(
+        { id: HARDCODED_ADMIN.id, role: HARDCODED_ADMIN.role }, 
+        secret, 
+        { expiresIn: '7d' }
+      );
+
+      return res.json({ 
+        success: true, 
+        token, 
+        user: { 
+          id: HARDCODED_ADMIN.id, 
+          email: HARDCODED_ADMIN.email, 
+          name: HARDCODED_ADMIN.name, 
+          role: HARDCODED_ADMIN.role 
+        } 
+      });
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // FALLBACK TO DATABASE USERS
+    // ══════════════════════════════════════════════════════════════
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return res.status(400).json({ success: false, message: 'Invalid credentials' });
