@@ -91,11 +91,31 @@ final cartProvider =
   (ref) => CartNotifier(),
 );
 
-// Cart computed values
+// ✅ FIX: Cart computed values - NOW REACTIVE
 final cartTotalProvider = Provider<double>((ref) {
-  return ref.watch(cartProvider.notifier).total;
+  final cartState = ref.watch(cartProvider);  // ← Watch the state, not notifier
+  return cartState.fold(0.0, (sum, item) => sum + item.totalPrice) + 
+         (cartState.fold(0.0, (sum, item) => sum + item.totalPrice) >= 1000 ? 0 : 50);
 });
 
 final cartItemCountProvider = Provider<int>((ref) {
-  return ref.watch(cartProvider.notifier).itemCount;
+  final cartState = ref.watch(cartProvider);  // ← Watch the state, not notifier
+  return cartState.fold(0, (sum, item) => sum + item.quantity);
+});
+
+// Optional: Individual computed providers
+final cartSubtotalProvider = Provider<double>((ref) {
+  final cartState = ref.watch(cartProvider);
+  return cartState.fold(0.0, (sum, item) => sum + item.totalPrice);
+});
+
+final cartDeliveryFeeProvider = Provider<double>((ref) {
+  final subtotal = ref.watch(cartSubtotalProvider);
+  return subtotal >= 1000 ? 0 : 50;
+});
+
+// ── All Menu Items Provider (for search) ──
+final allMenuItemsProvider = FutureProvider<List<MenuItemModel>>((ref) async {
+  final items = await ApiService.getMenuItems(); // No category filter
+  return items.map((i) => MenuItemModel.fromJson(i)).toList();
 });
