@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { ShoppingBag, UtensilsCrossed } from 'lucide-react';
+import { ShoppingBag, UtensilsCrossed, Grid3x3 } from 'lucide-react';
 
 export default function Layout() {
   return (
@@ -60,6 +60,7 @@ export default function Layout() {
               gap: '12px',
               padding: '12px 16px',
               borderRadius: '12px',
+              marginBottom: '8px',
               textDecoration: 'none',
               fontSize: '14px',
               fontWeight: '500',
@@ -70,6 +71,26 @@ export default function Layout() {
           >
             <UtensilsCrossed size={18} />
             Menu Items
+          </NavLink>
+
+          <NavLink
+            to="/categories"
+            style={({ isActive }) => ({
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '12px 16px',
+              borderRadius: '12px',
+              textDecoration: 'none',
+              fontSize: '14px',
+              fontWeight: '500',
+              backgroundColor: isActive ? '#E63946' : 'transparent',
+              color: isActive ? 'white' : '#888',
+              transition: 'all 0.2s',
+            })}
+          >
+            <Grid3x3 size={18} />
+            Categories
           </NavLink>
         </nav>
 

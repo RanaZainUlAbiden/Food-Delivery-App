@@ -3,7 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import Layout from './components/Layout';
 import OrdersPage from './pages/OrdersPage';
 import MenuPage from './pages/MenuPage';
-
+import CategoriesPage from './pages/CategoriesPage';
 import LoginPage from './pages/LoginPage';
 
 export default function App() {
@@ -16,6 +16,7 @@ export default function App() {
           <Route index element={<Navigate to="/orders" replace />} />
           <Route path="orders" element={<OrdersPage />} />
           <Route path="menu" element={<MenuPage />} />
+          <Route path="categories" element={<CategoriesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
